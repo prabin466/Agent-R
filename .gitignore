@@ -1,3 +1,6 @@
 .env
 .venv/
+*.yaml
+.vscode/
+eval_set.json
 __pycache__/
