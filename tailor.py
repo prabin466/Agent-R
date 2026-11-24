@@ -12,6 +12,7 @@ BULLETS = {b["id"]: b["text"] for s in ("experience", "projects", "education") f
 IDS = tuple(BULLETS)
 SKILLS = tuple(s for v in m["skills"].values() for s in v)
 JUDGE = os.getenv("JUDGE_MODEL", "gpt-4o")
+PICKER = os.getenv("PICKER_MODEL", "gpt-4o")
 
 class Bullet(BaseModel):
     source_id: Literal[IDS]
@@ -41,7 +42,7 @@ Change words, not facts: no new duties, tools, numbers, outcomes, scope, or qual
 Skills: the relevant ones. fit_score 1-10, honest."""
 
 CHECK = """For each pair, ok=false if REWRITE states anything SOURCE does not: new duties, tools, numbers, outcomes, scope, or quality claims.
-A quality claim is any judgement of how well the work was done, even a single word (e.g. "efficiently", "excellent").
+A quality claim is any word that praises the work or its result, even a single word: how well it was done (e.g. "efficiently", "excellent") or how complete or reliable the result is (e.g. "robust", "seamless").
 Scope inflation is a stronger verb that claims more responsibility than SOURCE shows (e.g. "led" for "helped").
 Same fact in different words is ok. Omitting SOURCE details is ok. 'added' must quote the unsupported phrase exactly as it appears in REWRITE."""
 
@@ -62,7 +63,7 @@ def generate(jd: str, ids: list[str]) -> Resume:
 @tracer.chain()
 def select(jd:str) -> list[Pick]:
     text = "\n".join(f"{i}: {t}" for i, t in BULLETS.items())
-    return ask(SELECT, f"BULLETS:\n{text}\n\nJOB:\n{jd}", Selection).output_parsed.picks
+    return ask(SELECT, f"BULLETS:\n{text}\n\nJOB:\n{jd}", Selection, model=PICKER).output_parsed.picks
     
 
 @tracer.chain()

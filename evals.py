@@ -1,13 +1,12 @@
 from contextlib import nullcontext
-import json, sys, yaml
+import json, sys
 from openinference.instrumentation import suppress_tracing
 from tailor import check
 
-master = yaml.safe_load(open("master_resume.yaml"))
-src = {b["id"]: b["text"] for sec in ("experience", "education", "projects") for item in master[sec] for b in item["bullets"]}
 cases = json.load(open("eval_set.json"))
 
-pairs = {f"c{i}": {"source": src[c["source_id"]], "rewrite": c["rewrite"]} for i, c in enumerate(cases)}
+# what: build each judge input straight from the case; why: the eval no longer depends on any resume file
+pairs = {f"c{i}": {"source": c["source"], "rewrite": c["rewrite"]} for i, c in enumerate(cases)}
 
 def run(batched):
    return check(pairs) if batched else {k: check({k: v})[k] for k, v in pairs.items()}
