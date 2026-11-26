@@ -8,3 +8,6 @@ relevance_set.json
 jds/
 out/
 PLAN.md
+jd_types.json
+*.summaries.json
+.claude/settings.local.json

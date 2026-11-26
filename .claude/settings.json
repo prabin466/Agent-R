@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "grep -qE '\\bgit\\s+(commit|push)\\b' && { echo 'Blocked: the user commits, not Claude' >&2; exit 2; } || exit 0" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "cd \"$CLAUDE_PROJECT_DIR\" && f=$(.venv/bin/python -c 'import json,sys; print(json.load(sys.stdin)[\"tool_input\"][\"file_path\"])') && case \"$f\" in *.py) .venv/bin/ruff format -q \"$f\" && .venv/bin/ruff check --fix -q \"$f\" >&2 || exit 2;; esac" }]
+      }
+    ]
+  }
+}

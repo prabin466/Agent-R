@@ -1,8 +1,8 @@
 import os
 
 from dotenv import load_dotenv
-from phoenix.otel import register
 from openinference.instrumentation.openai import OpenAIInstrumentor
+from phoenix.otel import register
 
 load_dotenv()
 
